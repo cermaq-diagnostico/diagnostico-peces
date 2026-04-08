@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico | Peces Letárgicos — Cermaq</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --aqua: #0096a0;
+  --aqua-dark: #007880;
+  --aqua-light: #e0f5f6;
+  --deep: #324664;
+  --coral: #fa6e5a;
+  --grey: #d2d2cd;
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f7f7f5;
+  --text: #1a1a1a;
+  --text-muted: #666660;
+  --border: #e0e0db;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--deep);
+  color: white;
+  padding: 72px 48px 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -80px;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  background: rgba(0,150,160,0.15);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: 200px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: rgba(250,110,90,0.08);
+  pointer-events: none;
+}
+
+.hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+
+.hero-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-label::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--aqua);
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--aqua);
+}
+
+.hero-sub {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  max-width: 560px;
+  line-height: 1.65;
+  margin-bottom: 36px;
+}
+
+.hero-note {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(250,110,90,0.12);
+  border: 1px solid rgba(250,110,90,0.25);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  max-width: 520px;
+}
+
+.hero-note-icon {
+  color: var(--coral);
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.hero-note strong { color: var(--coral); font-weight: 500; }
+
+/* ── PROGRESS ── */
+.progress-bar-wrap {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.progress-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.progress-inner::-webkit-scrollbar { display: none; }
+
+.prog-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 14px 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.prog-step.active {
+  color: var(--aqua);
+  font-weight: 500;
+  border-bottom-color: var(--aqua);
+}
+
+.prog-step.done { color: var(--deep); }
+
+.prog-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.prog-step.active .prog-num {
+  background: var(--aqua);
+  color: white;
+}
+
+.prog-step.done .prog-num {
+  background: var(--deep);
+  color: white;
+}
+
+.prog-sep {
+  width: 20px; height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+/* ── FORM ── */
+.form-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 48px 80px;
+}
+
+/* ── SECTION ── */
+.section {
+  display: none;
+  animation: fadeUp 0.35s ease forwards;
+}
+
+.section.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.section-meta { flex: 1; }
+
+.section-tag {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--aqua);
+  margin-bottom: 6px;
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--deep);
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.section-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── FACTOR CARD ── */
+.factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.factor-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.factor-card:hover {
+  border-color: var(--aqua);
+  box-shadow: 0 2px 12px rgba(0,150,160,0.08);
+}
+
+.factor-card.has-value {
+  border-color: rgba(0,150,160,0.4);
+}
+
+.factor-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.factor-label strong {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.scale-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scale-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scale-label-small {
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 80px;
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+.scale-label-small.right {
+  text-align: right;
+}
+
+.scale-options {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.scale-btn {
+  flex: 1;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scale-btn:hover {
+  border-color: var(--aqua);
+  color: var(--aqua);
+  background: var(--aqua-light);
+}
+
+.scale-btn.selected {
+  background: var(--aqua);
+  border-color: var(--aqua);
+  color: white;
+  font-weight: 500;
+}
+
+.scale-btn.selected-1 { background: #d2eded; border-color: #b0d8da; color: var(--deep); }
+.scale-btn.selected-2 { background: #a0d4d8; border-color: #7ec0c4; color: var(--deep); }
+.scale-btn.selected-3 { background: #5bb8be; border-color: #3ea5ac; color: white; }
+.scale-btn.selected-4 { background: #0096a0; border-color: #007880; color: white; }
+.scale-btn.selected-5 { background: var(--deep); border-color: #243450; color: white; }
+
+.scale-nums {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.scale-num-label {
+  flex: 1;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── OPEN QUESTION ── */
+.open-q {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
+}
+
+.open-q label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.open-q textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  resize: vertical;
+  min-height: 90px;
+  background: var(--bg);
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.open-q textarea:focus { border-color: var(--aqua); }
+
+/* ── NAV BUTTONS ── */
+.nav-btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-back {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 24px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-back:hover { border-color: var(--deep); color: var(--deep); }
+
+.btn-next {
+  background: var(--aqua);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-next:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+
+.btn-submit {
+  background: var(--deep);
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit:hover { background: #243450; transform: translateY(-1px); }
+
+.step-counter {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── THANKS ── */
+.thanks {
+  display: none;
+  text-align: center;
+  padding: 80px 48px;
+  max-width: 860px;
+  margin: 0 auto;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.thanks-icon {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--aqua-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  margin: 0 auto 28px;
+}
+
+.thanks h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--deep);
+  margin-bottom: 12px;
+}
+
+.thanks p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ── CERMAQ FOOTER ── */
+.cermaq-bar {
+  background: var(--deep);
+  padding: 16px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cermaq-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+}
+
+.cermaq-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--aqua);
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 48px 24px 40px; }
+  .form-wrap { padding: 32px 24px 60px; }
+  .progress-bar-wrap { padding: 0 24px; }
+  .cermaq-bar { padding: 16px 24px; }
+}
+</style>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:_ApprovalStatus msdt:dt="string">0</mso:_ApprovalStatus>
+<mso:_ApprovalAssignedTo msdt:dt="string"></mso:_ApprovalAssignedTo>
+<mso:_ApprovalRespondedBy msdt:dt="string"></mso:_ApprovalRespondedBy>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Diagnóstico operacional · Cermaq Chile</div>
+    <h1>Peces <em>letárgicos</em><br>en acopio</h1>
+    <p class="hero-sub">Este formulario busca identificar, desde la experiencia del equipo, los factores que más inciden en la llegada de peces letárgicos a acopio y su posterior impacto en descarte en planta.</p>
+    <div class="hero-note">
+      <span class="hero-note-icon">◈</span>
+      <span><strong>Hablamos del problema, no de la solución.</strong> Por favor evalúa cada factor según cuánto crees que contribuye al problema actual — no lo que ya se ha hecho ni lo que se podría hacer.</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="prog-step active" onclick="goTo(0)" id="ps0"><span class="prog-num">1</span> Estado del pez</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(1)" id="ps1"><span class="prog-num">2</span> Operación</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(2)" id="ps2"><span class="prog-num">3</span> Coordinación</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(3)" id="ps3"><span class="prog-num">4</span> Infraestructura</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(4)" id="ps4"><span class="prog-num">5</span> Tiempos</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(5)" id="ps5"><span class="prog-num">6</span> Entorno y control</div>
+    <div class="prog-sep"></div>
+    <div class="prog-step" onclick="goTo(6)" id="ps6"><span class="prog-num">7</span> Cierre</div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-wrap" id="formWrap">
+
+  <!-- SECCIÓN 1: ESTADO DEL PEZ -->
+  <div class="section active" id="sec0">
+    <div class="section-header">
+      <div class="section-icon" style="background:#e0f5f6;">🐟</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 1 de 6</div>
+        <div class="section-title">Estado del pez</div>
+        <div class="section-desc">Condición fisiológica, sanitaria y de manejo previo a la cosecha que el pez trae consigo al ingresar al proceso.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors0"></div>
+    <div class="nav-btns">
+      <span class="step-counter">Sección 1 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2: OPERACIÓN -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <div class="section-icon" style="background:#eef0f5;">⚙️</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 2 de 6</div>
+        <div class="section-title">Operación</div>
+        <div class="section-desc">Forma en que se ejecuta la maniobra de cosecha, transferencia y bombeo — desde el lance hasta el ingreso a planta.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors1"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 2 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3: COORDINACIÓN -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f5eef5;">🤝</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 3 de 6</div>
+        <div class="section-title">Coordinación</div>
+        <div class="section-desc">Alineamiento entre áreas, comunicación entre etapas y claridad de roles durante el proceso de cosecha.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors2"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 3 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 4: INFRAESTRUCTURA -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f5f0e8;">🔧</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 4 de 6</div>
+        <div class="section-title">Infraestructura</div>
+        <div class="section-desc">Capacidad y condición de los equipos, sistemas de transferencia, oxigenación y acopio disponibles en el proceso.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors3"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 4 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 5: TIEMPOS -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f5f0e0;">⏱️</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 5 de 6</div>
+        <div class="section-title">Tiempos y planificación</div>
+        <div class="section-desc">Permanencias, esperas, secuencias y programación logística que determinan cuánto tiempo el pez está expuesto a condiciones de estrés.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors4"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 5 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 6: ENTORNO Y CONTROL -->
+  <div class="section" id="sec5">
+    <div class="section-header">
+      <div class="section-icon" style="background:#eaf5f0;">📊</div>
+      <div class="section-meta">
+        <div class="section-tag">Rama 6 de 6</div>
+        <div class="section-title">Entorno y control</div>
+        <div class="section-desc">Parámetros ambientales, sistemas de monitoreo, trazabilidad y capacidad de detección oportuna de deterioro del pez.</div>
+      </div>
+    </div>
+    <div class="factors-list" id="factors5"></div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 6 de 7</span>
+      <button class="btn-next" onclick="nextSection()">Siguiente <span>→</span></button>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 7: CIERRE -->
+  <div class="section" id="sec6">
+    <div class="section-header">
+      <div class="section-icon" style="background:#f0f2f5;">✍️</div>
+      <div class="section-meta">
+        <div class="section-tag">Cierre</div>
+        <div class="section-title">Perspectiva final</div>
+        <div class="section-desc">Dos preguntas abiertas para capturar lo que no esté en las opciones anteriores.</div>
+      </div>
+    </div>
+
+    <div class="open-q">
+      <label>En tu opinión, ¿cuál es la etapa del proceso donde se genera el mayor daño al pez? ¿Por qué?</label>
+      <textarea id="open1" placeholder="Escribe tu respuesta aquí..."></textarea>
+    </div>
+
+    <div class="open-q">
+      <label>¿Hay algún factor relevante que no haya aparecido en las secciones anteriores?</label>
+      <textarea id="open2" placeholder="Escribe tu respuesta aquí..."></textarea>
+    </div>
+
+    <div class="open-q">
+      <label>Rol / área en Cermaq <span style="font-weight:300;color:var(--text-muted)">(opcional)</span></label>
+      <textarea id="open3" placeholder="Ej: Jefe de Centro, Coordinador Wellboat, Planta..." style="min-height:52px;"></textarea>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-back" onclick="prevSection()">← Anterior</button>
+      <span class="step-counter">Sección 7 de 7</span>
+      <button class="btn-submit" onclick="submitForm()">Enviar diagnóstico ✓</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- THANKS -->
+<div class="thanks" id="thanks">
+  <div class="thanks-icon">✓</div>
+  <h2>Gracias por tu aporte</h2>
+  <p>Tu diagnóstico ha sido registrado. Con las respuestas del equipo construiremos el mapa de causas prioritarias para trabajar juntos en la reducción de peces letárgicos.</p>
+</div>
+
+<!-- FOOTER -->
+<div class="cermaq-bar">
+  <span class="cermaq-name"><span class="cermaq-dot"></span>CERMAQ Chile</span>
+  <span style="font-size:12px;color:rgba(255,255,255,0.3);">Diagnóstico interno · Confidencial</span>
+</div>
+
+<script>
+const sections = [
+  {
+    id: 0,
+    factors: [
+      "Condición sanitaria deficiente previa a la cosecha",
+      "Período de ayuno insuficiente o mal gestionado",
+      "Estrés previo acumulado por manejo en jaulas",
+      "Alta carga parasitaria (cáligus u otros)",
+      "Heterogeneidad del lote (tallas, condición corporal)",
+      "Condición ambiental adversa durante el período de cultivo"
+    ]
+  },
+  {
+    id: 1,
+    factors: [
+      "Duración excesiva del proceso de hacinamiento en lance",
+      "Manejo brusco de redes durante la cosecha",
+      "Densidad elevada de peces en bodegas del wellboat",
+      "Velocidad de bombeo inadecuada durante la transferencia",
+      "Número excesivo de lances al bombear hacia planta",
+      "Secuencia de cosecha que prolonga el tiempo en pozo"
+    ]
+  },
+  {
+    id: 2,
+    factors: [
+      "Falta de alineamiento entre centro, wellboat y planta en ventanas de operación",
+      "Criterios distintos entre áreas sobre qué es un pez apto para cosechar",
+      "Decisiones reactivas ante imprevistos sin protocolo definido",
+      "Comunicación tardía de condiciones del lote entre etapas",
+      "Ausencia de responsable claro ante situaciones de deterioro del pez"
+    ]
+  },
+  {
+    id: 3,
+    factors: [
+      "Capacidad de oxigenación insuficiente en bodegas del wellboat",
+      "Sistemas de transferencia y bombeo que generan daño mecánico",
+      "Acopio sin condiciones adecuadas de densidad o parámetros",
+      "Equipos de monitoreo de parámetros abióticos insuficientes o sin mantención",
+      "Red de lance inadecuada para reducir estrés en la población"
+    ]
+  },
+  {
+    id: 4,
+    factors: [
+      "Tiempo de permanencia excesivo en acopio previo al bombeo",
+      "Esperas prolongadas frente a planta sin capacidad de recepción",
+      "Programación de cosecha sin holgura ante variabilidad operacional",
+      "Secuencia logística que acumula biomasa antes de descargar",
+      "Ventanas de planta mal coordinadas con arribo del wellboat",
+      "Tiempos muertos entre etapas sin justificación operacional"
+    ]
+  },
+  {
+    id: 5,
+    factors: [
+      "Parámetros abióticos (temperatura, oxígeno, CO₂) fuera de rango sin detección oportuna",
+      "Ausencia de indicadores tempranos de deterioro del pez",
+      "Registros incompletos o tardíos entre etapas del proceso",
+      "Condiciones ambientales adversas durante descarga no consideradas en planificación",
+      "Criterios de evaluación del estado del pez no estandarizados entre operadores",
+      "Falta de trazabilidad del lote entre centro de cultivo y planta"
+    ]
+  }
+];
+
+const responses = {};
+let current = 0;
+
+function buildFactors() {
+  sections.forEach(sec => {
+    const container = document.getElementById('factors' + sec.id);
+    sec.factors.forEach((f, fi) => {
+      const key = `s${sec.id}_f${fi}`;
+      responses[key] = 0;
+      const card = document.createElement('div');
+      card.className = 'factor-card';
+      card.id = 'card_' + key;
+      card.innerHTML = `
+        <div class="factor-label">${f}</div>
+        <div class="scale-wrap">
+          <div class="scale-row">
+            <span class="scale-label-small">No incide</span>
+            <div class="scale-options" id="scale_${key}">
+              ${[1,2,3,4,5].map(n => `<button class="scale-btn" data-key="${key}" data-val="${n}" onclick="setVal('${key}',${n},this)">${n}</button>`).join('')}
+            </div>
+            <span class="scale-label-small right">Incide mucho</span>
+          </div>
+        </div>`;
+      container.appendChild(card);
+    });
+  });
+}
+
+function setVal(key, val, btn) {
+  responses[key] = val;
+  const btns = document.querySelectorAll(`[data-key="${key}"]`);
+  btns.forEach(b => {
+    b.className = 'scale-btn';
+    if (parseInt(b.dataset.val) === val) {
+      b.classList.add(`selected-${val}`);
+    }
+  });
+  document.getElementById('card_' + key).classList.add('has-value');
+}
+
+function goTo(idx) {
+  document.getElementById('sec' + current).classList.remove('active');
+  document.getElementById('ps' + current).classList.remove('active');
+  if (current < idx) document.getElementById('ps' + current).classList.add('done');
+  current = idx;
+  document.getElementById('sec' + current).classList.add('active');
+  document.getElementById('ps' + current).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSection() {
+  if (current < 6) goTo(current + 1);
+}
+
+function prevSection() {
+  if (current > 0) goTo(current - 1);
+}
+
+function submitForm() {
+  document.getElementById('formWrap').style.display = 'none';
+  document.getElementById('thanks').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Log responses to console (replace with fetch/POST to backend)
+  const final = {
+    ...responses,
+    open1: document.getElementById('open1').value,
+    open2: document.getElementById('open2').value,
+    rol: document.getElementById('open3').value,
+    timestamp: new Date().toISOString()
+  };
+  console.log('Respuestas:', JSON.stringify(final, null, 2));
+}
+
+buildFactors();
+</script>
+</body>
+</html>
